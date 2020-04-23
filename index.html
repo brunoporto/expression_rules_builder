@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title></title>
+  </head>
+  <body>
+    <h3>Rules History Builder</h3>
+    <div id="myElement"></div>
+    <hr />
+    <button id="btnGetMyRules">Get Values</button>
+    <textarea
+      id="myRules"
+      style="display: block; width: 500px; height: 300px;"
+    ></textarea>
+    <script src="build/rules-history-builder.min.js" charset="utf-8"></script>
+    <script type="text/javascript">
+      var rulesHistory = RulesHistory({
+        target: "#myElement",
+        fields: [
+          {
+            name: "vendedores",
+            placeholder: "Vendedor",
+            type: "list",
+            values: [
+              ["Bruno", "BRUNO"],
+              ["José", "JOSE"],
+            ],
+          },
+          {
+            name: "perfis",
+            placeholder: "Perfil de Acesso",
+            type: "list",
+            values: [
+              ["Admin", "ADMIN"],
+              ["Cliente", "CLIENT"],
+            ],
+          },
+          {
+            name: "grupos",
+            placeholder: "Grupo",
+            type: "list",
+            values: [
+              ["Internos", "INTERNOS"],
+              ["Externos", "EXTERNOS"],
+            ],
+          },
+          {
+            name: "receber_descontar",
+            placeholder: "Receber ou Descontar",
+            type: "list",
+            values: [
+              ["Receber", "RECEBER"],
+              ["Descontar", "DESCONTAR"],
+            ],
+          },
+          {
+            name: "valor",
+            placeholder: "0,00",
+            type: "text",
+          },
+          {
+            name: "percentual",
+            placeholder: "0",
+            type: "text",
+          },
+        ],
+        rules: [
+          { name: "vendedor", text: "o vendedor {vendedores}" },
+          {
+            name: "vendedor_perfil",
+            text: "o vendedor {vendedores} com perfil {perfis}",
+          },
+          { name: "grupo", text: "o vendedor do grupo {grupos}" },
+          { name: "receber_descontar", text: "deve {receber_descontar}" },
+          { name: "valor", text: "o valor de R${valor}" },
+          { name: "percentual", text: "um percentual de {percentual}%" },
+        ],
+        values: [
+          { rule: "vendedor", values: { vendedores: "JOSE" } },
+          {
+            rule: "vendedor_perfil",
+            values: { vendedores: "BRUNO", perfis: "ADMIN" },
+          },
+          { rule: "valor", values: { valor: "50" } },
+        ],
+      });
+
+      document
+        .getElementById("btnGetMyRules")
+        .addEventListener("click", (ev) => {
+          var values = rulesHistory.getValues();
+          document.getElementById("myRules").value = JSON.stringify(
+            values,
+            undefined,
+            4
+          );
+        });
+    </script>
+  </body>
+</html>
