@@ -14,6 +14,7 @@ var erb = ExpressionRulesBuilder({
   fields: [
     {
       name: "fieldName",
+      placeholder: "fieldName",
       type: "list",
       values: [
         ["Label", "value"],
@@ -23,29 +24,30 @@ var erb = ExpressionRulesBuilder({
     },
     {
       name: "fieldName2",
+      placeholder: "fieldName2",
       type: "text",
     },
   ],
   expressions: [
     {
-      name: "rule1",
+      name: "expression1",
       text: "Lorem ipsum dolor sit {fieldName}, consectetur adipiscing elit.",
     },
     {
-      name: "rule2",
+      name: "expression2",
       text: "Donec {fieldName} ullamcorper. Duis consequat {fieldName2}",
     },
   ],
   rules: [
     {
-      expression: "rule2",
-      fields: { fieldName: "example", fieldName2: "example2" },
+      expression: "expression2",
+      fields: { fieldName: "whatever", fieldName2: "something" },
     },
   ],
 });
 
 var values = erb.getRules();
-// values => [{ rule: "rule2", values: { fieldName: "example", fieldName2: "example2" } }]
+// values => [{ expression: "expression2", values: { fieldName: "whatever", fieldName2: "something" } }]
 
 erb.beforeAddExpression(function (expressionName) {
   if (confirm("Are you sure?") == false) {
