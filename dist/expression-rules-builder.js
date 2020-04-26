@@ -141,18 +141,38 @@ var ExpressionExpressionsBuilder = /*#__PURE__*/function () {
     value: function getRules() {
       var rules = [];
       this.rulesContainer.querySelectorAll(".erb-rule-item").forEach(function (el) {
-        var ruleName = el.dataset.ruleName;
-        var ruleRules = {};
+        var expressionName = el.dataset.expressionName;
+        var fields = {};
         el.querySelectorAll("[data-field]").forEach(function (childEl) {
           var fieldName = childEl.dataset.field;
-          ruleRules[fieldName] = childEl.rule;
+          fields[fieldName] = childEl.value;
         });
         rules.push({
-          rule: ruleName,
-          rules: ruleRules
+          expression: expressionName,
+          fields: fields
         });
       });
       return rules;
+    }
+  }, {
+    key: "beforeAddExpression",
+    value: function beforeAddExpression(callback) {
+      this.beforeAddCb = callback;
+    }
+  }, {
+    key: "afterAddExpression",
+    value: function afterAddExpression(callback) {
+      this.afterAddCb = callback;
+    }
+  }, {
+    key: "beforeRemoveRule",
+    value: function beforeRemoveRule(callback) {
+      this.beforeRemoveCb = callback;
+    }
+  }, {
+    key: "afterRemoveRule",
+    value: function afterRemoveRule(callback) {
+      this.afterRemoveCb = callback;
     }
   }, {
     key: "_arrayItemsToMap",
@@ -177,18 +197,18 @@ var ExpressionExpressionsBuilder = /*#__PURE__*/function () {
   }, {
     key: "_buildExpressionsItems",
     value: function _buildExpressionsItems() {
-      for (var ruleName in this.expressions) {
-        var rule = this.expressions[ruleName];
+      for (var expressionName in this.expressions) {
+        var expression = this.expressions[expressionName];
 
-        var btnAddEl = this._createAddButton(ruleName);
+        var btnAddEl = this._createAddButton(expressionName);
 
-        var ruleItemElement = this._createItem(rule.name, rule.text, "erb-rule-item", btnAddEl);
+        var expressionItemElement = this._createItem(expression.name, expression.text, "erb-expression-item", btnAddEl);
 
-        if (document.querySelector(".erb-rule-item[data-rule-name=".concat(ruleName, "]")) !== null) {
-          ruleItemElement.classList.add("selected");
+        if (document.querySelector(".erb-rule-item[data-expression-name=".concat(expressionName, "]")) !== null) {
+          expressionItemElement.classList.add("selected");
         }
 
-        this.expressionsContainer.appendChild(ruleItemElement);
+        this.expressionsContainer.appendChild(expressionItemElement);
       }
     }
   }, {
@@ -196,10 +216,10 @@ var ExpressionExpressionsBuilder = /*#__PURE__*/function () {
     value: function _buildRules() {
       var _this = this;
 
-      this.rules.forEach(function (item) {
-        var ruleName = item.rule;
+      this.rules.forEach(function (rule) {
+        var expressionName = rule.expression;
 
-        _this.rulesContainer.appendChild(_this._createRuleItemElement(ruleName, item.rules));
+        _this.rulesContainer.appendChild(_this._createRuleItemElement(expressionName, rule.fields));
       });
     }
   }, {
@@ -209,33 +229,48 @@ var ExpressionExpressionsBuilder = /*#__PURE__*/function () {
 
       btnElement.addEventListener("click", function (ev) {
         var btn = ev.target;
-        btn.parentElement.classList.add("selected");
-        var ruleName = btn.dataset.ruleName;
+        var expressionName = btn.dataset.expressionName;
 
-        _this2.rulesContainer.appendChild(_this2._createRuleItemElement(ruleName));
+        if (_this2.beforeAddCb) {
+          if (_this2.beforeAddCb(expressionName) === false) return;
+        }
+
+        btn.parentElement.classList.add("selected");
+
+        _this2.rulesContainer.appendChild(_this2._createRuleItemElement(expressionName));
+
+        if (_this2.afterAddCb) _this2.afterAddCb(expressionName);
       });
     }
   }, {
     key: "_attachListenerToDelButton",
     value: function _attachListenerToDelButton(btnElement) {
-      btnElement.addEventListener("click", function (ev) {
-        if (confirm("Are you sure?") == false) return;
-        var btn = ev.target;
-        var ruleName = btn.dataset.ruleName;
-        var ruleItemEl = document.querySelector(".erb-rule-item[data-rule-name=".concat(ruleName, "]"));
+      var _this3 = this;
 
-        if (ruleItemEl) {
-          ruleItemEl.classList.remove("selected");
-          btn.parentElement.remove();
+      btnElement.addEventListener("click", function (ev) {
+        var btn = ev.target;
+        var expressionName = btn.dataset.expressionName;
+
+        if (_this3.beforeRemoveCb) {
+          if (_this3.beforeRemoveCb(expressionName) === false) return;
         }
+
+        var expressionItemEl = document.querySelector(".erb-expression-item[data-expression-name=".concat(expressionName, "]"));
+
+        if (expressionItemEl) {
+          expressionItemEl.classList.remove("selected");
+        }
+
+        btn.parentElement.remove();
+        if (_this3.afterRemoveCb) _this3.afterRemoveCb(expressionName);
       });
     }
   }, {
     key: "_createRuleItemElement",
-    value: function _createRuleItemElement(ruleName) {
-      var rules = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      var rule = this.expressions[ruleName];
-      var ruleText = rule.text;
+    value: function _createRuleItemElement(expressionName) {
+      var values = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var expression = this.expressions[expressionName];
+      var ruleText = expression.text;
       var matches = ruleText.matchAll(/\{(\w+)\}/g);
 
       var _iterator = _createForOfIteratorHelper(matches),
@@ -245,8 +280,8 @@ var ExpressionExpressionsBuilder = /*#__PURE__*/function () {
         for (_iterator.s(); !(_step = _iterator.n()).done;) {
           var match = _step.value;
           var field = this.fields[match[1]];
-          var initRule = rules[field.name];
-          ruleText = ruleText.replace(match[0], this._fieldHtml(field, ruleName, initRule));
+          var initValue = values[field.name];
+          ruleText = ruleText.replace(match[0], this._fieldHtml(field, expressionName, initValue));
         }
       } catch (err) {
         _iterator.e(err);
@@ -254,19 +289,19 @@ var ExpressionExpressionsBuilder = /*#__PURE__*/function () {
         _iterator.f();
       }
 
-      var btnDelEl = this._createDelButton(ruleName);
+      var btnDelEl = this._createDelButton(expressionName);
 
-      var ruleItemElement = this._createItem(ruleName, ruleText, "erb-rule-item", btnDelEl);
+      var ruleItemElement = this._createItem(expressionName, ruleText, "erb-rule-item", btnDelEl);
 
       return ruleItemElement;
     }
   }, {
     key: "_createAddButton",
-    value: function _createAddButton(ruleName) {
+    value: function _createAddButton(expressionName) {
       var btn = document.createElement("BUTTON");
       btn.classList = "erb-add-rule";
       btn.innerHTML = "+";
-      btn.dataset.ruleName = ruleName;
+      btn.dataset.expressionName = expressionName;
 
       this._attachListenerToAddButton(btn);
 
@@ -274,11 +309,11 @@ var ExpressionExpressionsBuilder = /*#__PURE__*/function () {
     }
   }, {
     key: "_createDelButton",
-    value: function _createDelButton(ruleName) {
+    value: function _createDelButton(expressionName) {
       var btn = document.createElement("BUTTON");
       btn.classList = "erb-del-rule";
       btn.innerHTML = "-";
-      btn.dataset.ruleName = ruleName;
+      btn.dataset.expressionName = expressionName;
 
       this._attachListenerToDelButton(btn);
 
@@ -286,24 +321,24 @@ var ExpressionExpressionsBuilder = /*#__PURE__*/function () {
     }
   }, {
     key: "_createItem",
-    value: function _createItem(ruleName, ruleText, className, actionBtn) {
+    value: function _createItem(expressionName, expressionText, className, actionBtn) {
       var div = document.createElement("DIV");
       div.classList = className;
-      div.dataset.ruleName = ruleName;
-      div.innerHTML = ruleText;
+      div.dataset.expressionName = expressionName;
+      div.innerHTML = expressionText;
       div.appendChild(actionBtn);
       return div;
     }
   }, {
     key: "_fieldHtml",
-    value: function _fieldHtml(field, ruleName) {
-      var initRule = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
+    value: function _fieldHtml(field, expressionName) {
+      var initValue = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
       var fieldElement = "";
 
       if (field.type == "list") {
-        fieldElement = this._fieldList(field, ruleName, initRule);
+        fieldElement = this._fieldList(field, expressionName, initValue);
       } else if (field.type == "text") {
-        fieldElement = this._fieldText(field, ruleName, initRule);
+        fieldElement = this._fieldText(field, expressionName, initValue);
       } else {
         fieldElement = "@".concat(field.name, "@");
       }
@@ -312,21 +347,21 @@ var ExpressionExpressionsBuilder = /*#__PURE__*/function () {
     }
   }, {
     key: "_fieldList",
-    value: function _fieldList(field, ruleName) {
+    value: function _fieldList(field, expressionName) {
       var initRule = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
       var fieldOptions = ["<option></option>"];
-      fieldOptions.push(field.rules.map(function (i) {
+      fieldOptions.push(field.values.map(function (i) {
         var rule = i[1];
         var selected = initRule == rule ? "selected" : "";
-        return "<option rule=\"".concat(rule, "\" ").concat(selected, ">").concat(i[0], "</option>");
+        return "<option value=\"".concat(rule, "\" ").concat(selected, ">").concat(i[0], "</option>");
       }));
-      return "<select name=\"".concat(ruleName, "[").concat(field.name, "]\" data-field=\"").concat(field.name, "\">").concat(fieldOptions.join(""), "</select>");
+      return "<select name=\"".concat(expressionName, "[").concat(field.name, "]\" placeholder=\"").concat(field.placeholder, "\" data-field=\"").concat(field.name, "\">").concat(fieldOptions.join(""), "</select>");
     }
   }, {
     key: "_fieldText",
-    value: function _fieldText(field, ruleName) {
+    value: function _fieldText(field, expressionName) {
       var initRule = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
-      return "<input type=\"text\" name=\"".concat(ruleName, "[").concat(field.name, "]\" data-field=\"").concat(field.name, "\" rule=\"").concat(initRule, "\" />");
+      return "<input type=\"text\" placeholder=\"".concat(field.placeholder, "\" name=\"").concat(expressionName, "[").concat(field.name, "]\" data-field=\"").concat(field.name, "\" value=\"").concat(initRule, "\" />");
     }
   }, {
     key: "_appendHtmlToElement",
