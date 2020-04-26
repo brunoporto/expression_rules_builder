@@ -90,15 +90,17 @@
       });
 
       erb.beforeAddExpression(function (expressionName) {
-        console.log(`Expression ${expressionName} will be added`);
+        if (confirm("Are you sure?") == false) {
+          console.log(`stopped by user!`);
+          return false;
+        }
       });
       erb.afterAddExpression(function (expressionName) {
         console.log(`Expression ${expressionName} added`);
       });
       erb.beforeRemoveRule(function (expressionName) {
-        console.log(`Rule ${expressionName} will be removed`);
         if (confirm("Are you sure?") == false) {
-          console.log(`Action canceled by user!`);
+          console.log(`stopped by user!`);
           return false;
         }
       });

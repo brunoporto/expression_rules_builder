@@ -72,6 +72,38 @@ erb.afterRemoveRule(function (expressionName) {
 });
 ```
 
+## Style
+
+```css
+/* Expression Item */
+div.erb-expression-item {
+}
+/* Selected Expression Item (expressions added to rules) */
+div.erb-expression-item.selected {
+}
+/* Rule Item */
+div.erb-rule-item {
+}
+/* Wrapper element of field type LIST <select> */
+span.erb-type-list {
+}
+/* Wrapper element of field type TEXT <input> */
+span.erb-type-text {
+}
+/* Wrapper element of any field (FIELD_NAME = field you named)
+js:  fields: [{name: "fieldName", ...}]
+css: span.erb-field-fieldName { ... }
+*/
+span.erb-field-FIELD_NAME {
+}
+/* Button add */
+button.erb-add-rule {
+}
+/* Button remove */
+button.erb-del-rule {
+}
+```
+
 ## Behavior
 
 Ao selecionar um item na lista de regras, ele marcará o item com a classe "selected", possibilitando que você desabilite, oculte ou altere o estilo das regras selecionadas.
