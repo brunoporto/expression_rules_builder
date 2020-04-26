@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title></title>
+  </head>
+  <body>
+    <h3>Expression Rules Builder</h3>
+    <div id="expressions-container"></div>
+    <hr />
+    <div id="rules-container"></div>
+    <hr />
+    <button id="btnGetMyRules">Get Rules</button>
+    <textarea
+      id="myRules"
+      style="display: block; width: 500px; height: 300px;"
+    ></textarea>
+    <script src="dist/expression-rules-builder.min.js" charset="utf-8"></script>
+    <script type="text/javascript">
+      var erb = ExpressionRulesBuilder({
+        expressionsContainer: "#expressions-container",
+        rulesContainer: "#rules-container",
+        fields: [
+          {
+            name: "vendedores",
+            placeholder: "Vendedor",
+            type: "list",
+            values: [
+              ["Bruno", "BRUNO"],
+              ["José", "JOSE"],
+            ],
+          },
+          {
+            name: "perfis",
+            placeholder: "Perfil de Acesso",
+            type: "list",
+            values: [
+              ["Admin", "ADMIN"],
+              ["Cliente", "CLIENT"],
+            ],
+          },
+          {
+            name: "grupos",
+            placeholder: "Grupo",
+            type: "list",
+            values: [
+              ["Internos", "INTERNOS"],
+              ["Externos", "EXTERNOS"],
+            ],
+          },
+          {
+            name: "receber_descontar",
+            placeholder: "Receber ou Descontar",
+            type: "list",
+            values: [
+              ["Receber", "RECEBER"],
+              ["Descontar", "DESCONTAR"],
+            ],
+          },
+          {
+            name: "valor",
+            placeholder: "0,00",
+            type: "text",
+          },
+          {
+            name: "percentual",
+            placeholder: "0",
+            type: "text",
+          },
+        ],
+        expressions: [
+          { name: "vendedor", text: "o vendedor {vendedores}" },
+          {
+            name: "vendedor_perfil",
+            text: "o vendedor {vendedores} com perfil {perfis}",
+          },
+          { name: "grupo", text: "o vendedor do grupo {grupos}" },
+          { name: "receber_descontar", text: "deve {receber_descontar}" },
+          { name: "valor", text: "o valor de R${valor}" },
+          { name: "percentual", text: "um percentual de {percentual}%" },
+        ],
+        rules: [
+          { expression: "vendedor", fields: { vendedores: "JOSE" } },
+          {
+            expression: "vendedor_perfil",
+            fields: { vendedores: "BRUNO", perfis: "ADMIN" },
+          },
+          { expression: "valor", fields: { valor: "50" } },
+        ],
+      });
+
+      erb.beforeAddExpression(function (expressionName) {
+        console.log(`Expression ${expressionName} will be added`);
+      });
+      erb.afterAddExpression(function (expressionName) {
+        console.log(`Expression ${expressionName} added`);
+      });
+      erb.beforeRemoveRule(function (expressionName) {
+        console.log(`Rule ${expressionName} will be removed`);
+        if (confirm("Are you sure?") == false) {
+          console.log(`Action canceled by user!`);
+          return false;
+        }
+      });
+      erb.afterRemoveRule(function (expressionName) {
+        console.log(`Rule ${expressionName} removed`);
+      });
+
+      document
+        .getElementById("btnGetMyRules")
+        .addEventListener("click", (ev) => {
+          var values = erb.getRules();
+          document.getElementById("myRules").value = JSON.stringify(
+            values,
+            undefined,
+            4
+          );
+        });
+    </script>
+
+    <style>
+      .erb-expression-item.selected {
+        display: none;
+      }
+    </style>
+  </body>
+</html>

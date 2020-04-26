@@ -1,0 +1,32 @@
+{
+  "name": "expression_rules_builder",
+  "version": "1.0.0",
+  "description": "Expression Rules Builder",
+  "main": "src/index.es6",
+  "dependencies": {
+    "babel-loader": "^8.1.0",
+    "dotenv": "^8.2.0",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.5"
+  },
+  "scripts": {
+    "build": "NODE_ENV=development webpack && webpack",
+    "dev": "webpack-dev-server --color --client-log-level --hot-only"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/brunoporto/expression_rules_builder.git"
+  },
+  "author": "Bruno Porto",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/brunoporto/expression_rules_builder/issues"
+  },
+  "homepage": "https://github.com/brunoporto/expression_rules_builder#readme"
+}
