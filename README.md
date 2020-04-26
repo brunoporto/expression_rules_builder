@@ -106,17 +106,17 @@ button.erb-del-rule {
 
 ## Behavior
 
-Ao selecionar um item na lista de regras, ele marcará o item com a classe "selected", possibilitando que você desabilite, oculte ou altere o estilo das regras selecionadas.
+...
 
 ## Commands
 
-Para gerar o pacote de distribuição em /dist
+To generate dist package:
 
 ```bash
 yarn run build
 ```
 
-Para iniciar o servidor de DEV e testar o exemplo (index.html) em http://localhost:9000/
+Run index.html to development [http://localhost:9000](http://localhost:9000):
 
 ```bash
 yarn run dev
