@@ -280,8 +280,16 @@ var ExpressionExpressionsBuilder = /*#__PURE__*/function () {
         for (_iterator.s(); !(_step = _iterator.n()).done;) {
           var match = _step.value;
           var field = this.fields[match[1]];
-          var initValue = values[field.name];
-          ruleText = ruleText.replace(match[0], this._fieldHtml(field, expressionName, initValue));
+
+          if (field) {
+            var initValue = values[field.name];
+
+            var fieldElement = this._fieldElement(field, expressionName, initValue);
+
+            ruleText = ruleText.replace(match[0], fieldElement.outerHTML);
+          } else {
+            ruleText = ruleText.replace(match[0], "!!INVALID FIELD: ".concat(match[1], "!!"));
+          }
         }
       } catch (err) {
         _iterator.e(err);
@@ -330,8 +338,8 @@ var ExpressionExpressionsBuilder = /*#__PURE__*/function () {
       return div;
     }
   }, {
-    key: "_fieldHtml",
-    value: function _fieldHtml(field, expressionName) {
+    key: "_fieldElement",
+    value: function _fieldElement(field, expressionName) {
       var initValue = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
       var fieldElement = "";
 
@@ -340,28 +348,83 @@ var ExpressionExpressionsBuilder = /*#__PURE__*/function () {
       } else if (field.type == "text") {
         fieldElement = this._fieldText(field, expressionName, initValue);
       } else {
-        fieldElement = "@".concat(field.name, "@");
+        fieldElement = document.createElement("SPAN");
+        fieldElement.innerHTML = "@".concat(field.name, "@");
       }
 
-      return "<span class=\"erb-type-".concat(field.type, " erb-field-").concat(field.name, "\">").concat(fieldElement, "</span>");
+      var fieldContainer = this._fieldContainerTag(field);
+
+      fieldContainer.append(fieldElement);
+      return fieldContainer;
     }
   }, {
     key: "_fieldList",
     value: function _fieldList(field, expressionName) {
-      var initRule = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
-      var fieldOptions = ["<option></option>"];
-      fieldOptions.push(field.values.map(function (i) {
-        var rule = i[1];
-        var selected = initRule == rule ? "selected" : "";
-        return "<option value=\"".concat(rule, "\" ").concat(selected, ">").concat(i[0], "</option>");
-      }));
-      return "<select name=\"".concat(expressionName, "[").concat(field.name, "]\" placeholder=\"").concat(field.placeholder, "\" data-field=\"").concat(field.name, "\">").concat(fieldOptions.join(""), "</select>");
+      var _this4 = this;
+
+      var initValue = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
+
+      var selectTag = this._selectTag(field, expressionName);
+
+      var emptyOptionTag = this._optionTag();
+
+      selectTag.appendChild(emptyOptionTag);
+      field.values.map(function (i) {
+        var value = i[1];
+        var selected = initValue == value;
+
+        var optionTag = _this4._optionTag(value, i[0], selected);
+
+        selectTag.appendChild(optionTag);
+      });
+      return selectTag;
     }
   }, {
     key: "_fieldText",
     value: function _fieldText(field, expressionName) {
-      var initRule = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
-      return "<input type=\"text\" placeholder=\"".concat(field.placeholder, "\" name=\"").concat(expressionName, "[").concat(field.name, "]\" data-field=\"").concat(field.name, "\" value=\"").concat(initRule, "\" />");
+      var initValue = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
+      return this._inputTag(field, expressionName, initValue);
+    }
+  }, {
+    key: "_inputTag",
+    value: function _inputTag(field, expressionName) {
+      var initValue = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
+      var nodeElement = document.createElement("INPUT");
+      if (field.customClass) nodeElement.classList = field.customClass;
+      if (field.placeholder) nodeElement.placeholder = field.placeholder;
+      nodeElement.name = "".concat(expressionName, "[").concat(field.name, "]");
+      nodeElement.dataset.field = field.name;
+      nodeElement.defaultValue = initValue;
+      return nodeElement;
+    }
+  }, {
+    key: "_selectTag",
+    value: function _selectTag(field, expressionName) {
+      var nodeElement = document.createElement("SELECT");
+      if (field.customClass) nodeElement.classList = field.customClass;
+      if (field.placeholder) nodeElement.placeholder = field.placeholder;
+      nodeElement.name = "".concat(expressionName, "[").concat(field.name, "]");
+      nodeElement.dataset.field = field.name;
+      return nodeElement;
+    }
+  }, {
+    key: "_optionTag",
+    value: function _optionTag() {
+      var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
+      var text = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
+      var selected = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+      var nodeElement = document.createElement("OPTION");
+      if (selected) nodeElement.defaultSelected = true;
+      nodeElement.value = value;
+      nodeElement.innerHTML = text;
+      return nodeElement;
+    }
+  }, {
+    key: "_fieldContainerTag",
+    value: function _fieldContainerTag(field) {
+      var nodeElement = document.createElement("SPAN");
+      nodeElement.classList = "erb-type-".concat(field.type, " erb-field-").concat(field.name);
+      return nodeElement;
     }
   }, {
     key: "_appendHtmlToElement",
