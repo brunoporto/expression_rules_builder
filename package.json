@@ -3,14 +3,13 @@
   "version": "1.1.1",
   "description": "Expression Rules Builder",
   "main": "src/index.es6",
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
     "babel-loader": "^8.1.0",
     "dotenv": "^8.2.0",
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.11",
-    "webpack-dev-server": "^3.10.3"
-  },
-  "devDependencies": {
+    "webpack-dev-server": "^3.10.3",
     "@babel/cli": "^7.8.4",
     "@babel/core": "^7.9.0",
     "@babel/preset-env": "^7.9.5"
