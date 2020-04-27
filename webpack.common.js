@@ -5,6 +5,8 @@ module.exports = {
   },
   devtool: "source-map",
   output: {
+    library: "ExpressionRulesBuilder",
+    libraryTarget: "umd",
     filename: "[name].min.js",
     path: __dirname,
   },
