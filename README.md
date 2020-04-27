@@ -16,7 +16,7 @@ yarn add expression_rules_builder
 ```
 
 ```js
-import ExpressionRulesBuilder from "expression-rules-builder";
+import ExpressionRulesBuilder from "expression_rules_builder";
 
 var erb = new ExpressionRulesBuilder({
   expressionsContainer: "#expressions-container",
