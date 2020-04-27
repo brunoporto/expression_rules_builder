@@ -1,6 +1,6 @@
 {
-  "name": "expression_rules_builder",
-  "version": "1.2.1",
+  "name": "expression-rules-builder",
+  "version": "1.0.0",
   "description": "Expression Rules Builder",
   "keywords": [
     "expression",
