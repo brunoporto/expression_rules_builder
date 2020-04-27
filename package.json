@@ -1,6 +1,6 @@
 {
   "name": "expression_rules_builder",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Expression Rules Builder",
   "main": "src/index.es6",
   "dependencies": {

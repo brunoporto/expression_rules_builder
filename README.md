@@ -15,6 +15,7 @@ var erb = ExpressionRulesBuilder({
     {
       name: "fieldName",
       placeholder: "fieldName",
+      customClass: "my-select-class",
       type: "list",
       values: [
         ["Label", "value"],
@@ -25,6 +26,7 @@ var erb = ExpressionRulesBuilder({
     {
       name: "fieldName2",
       placeholder: "fieldName2",
+      customClass: "my-input-class",
       type: "text",
     },
   ],
@@ -101,6 +103,12 @@ button.erb-add-rule {
 }
 /* Button remove */
 button.erb-del-rule {
+}
+/* Custom field classes
+js:  fields: [{..., customClass: "my-custom-class", ...}]
+css: .my-custom-class { ... }
+*/
+.my-custom-class {
 }
 ```
 

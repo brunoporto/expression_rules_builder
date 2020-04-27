@@ -125,11 +125,13 @@ class ExpressionExpressionsBuilder {
     var matches = ruleText.matchAll(/\{(\w+)\}/g);
     for (const match of matches) {
       var field = this.fields[match[1]];
-      var initValue = values[field.name];
-      ruleText = ruleText.replace(
-        match[0],
-        this._fieldHtml(field, expressionName, initValue)
-      );
+      if (field) {
+        var initValue = values[field.name];
+        var fieldElement = this._fieldElement(field, expressionName, initValue);
+        ruleText = ruleText.replace(match[0], fieldElement.outerHTML);
+      } else {
+        ruleText = ruleText.replace(match[0], `!!INVALID FIELD: ${match[1]}!!`);
+      }
     }
     var btnDelEl = this._createDelButton(expressionName);
     var ruleItemElement = this._createItem(
@@ -168,34 +170,66 @@ class ExpressionExpressionsBuilder {
     return div;
   }
 
-  _fieldHtml(field, expressionName, initValue = "") {
+  _fieldElement(field, expressionName, initValue = "") {
     var fieldElement = "";
     if (field.type == "list") {
       fieldElement = this._fieldList(field, expressionName, initValue);
     } else if (field.type == "text") {
       fieldElement = this._fieldText(field, expressionName, initValue);
     } else {
-      fieldElement = `@${field.name}@`;
+      fieldElement = document.createElement("SPAN");
+      fieldElement.innerHTML = `@${field.name}@`;
     }
-    return `<span class="erb-type-${field.type} erb-field-${field.name}">${fieldElement}</span>`;
+    var fieldContainer = this._fieldContainerTag(field);
+    fieldContainer.append(fieldElement);
+    return fieldContainer;
   }
 
-  _fieldList(field, expressionName, initRule = "") {
-    var fieldOptions = ["<option></option>"];
-    fieldOptions.push(
-      field.values.map((i) => {
-        var rule = i[1];
-        var selected = initRule == rule ? "selected" : "";
-        return `<option value="${rule}" ${selected}>${i[0]}</option>`;
-      })
-    );
-    return `<select name="${expressionName}[${field.name}]" placeholder="${
-      field.placeholder
-    }" data-field="${field.name}">${fieldOptions.join("")}</select>`;
+  _fieldList(field, expressionName, initValue = "") {
+    var selectTag = this._selectTag(field, expressionName);
+    var emptyOptionTag = this._optionTag();
+    selectTag.appendChild(emptyOptionTag);
+    field.values.map((i) => {
+      var value = i[1];
+      var selected = initValue == value;
+      var optionTag = this._optionTag(value, i[0], selected);
+      selectTag.appendChild(optionTag);
+    });
+    return selectTag;
   }
 
-  _fieldText(field, expressionName, initRule = "") {
-    return `<input type="text" placeholder="${field.placeholder}" name="${expressionName}[${field.name}]" data-field="${field.name}" value="${initRule}" />`;
+  _fieldText(field, expressionName, initValue = "") {
+    return this._inputTag(field, expressionName, initValue);
+  }
+
+  _inputTag(field, expressionName, initValue = "") {
+    var nodeElement = document.createElement("INPUT");
+    if (field.customClass) nodeElement.classList = field.customClass;
+    if (field.placeholder) nodeElement.placeholder = field.placeholder;
+    nodeElement.name = `${expressionName}[${field.name}]`;
+    nodeElement.dataset.field = field.name;
+    nodeElement.defaultValue = initValue;
+    return nodeElement;
+  }
+  _selectTag(field, expressionName) {
+    var nodeElement = document.createElement("SELECT");
+    if (field.customClass) nodeElement.classList = field.customClass;
+    if (field.placeholder) nodeElement.placeholder = field.placeholder;
+    nodeElement.name = `${expressionName}[${field.name}]`;
+    nodeElement.dataset.field = field.name;
+    return nodeElement;
+  }
+  _optionTag(value = "", text = "", selected = false) {
+    var nodeElement = document.createElement("OPTION");
+    if (selected) nodeElement.defaultSelected = true;
+    nodeElement.value = value;
+    nodeElement.innerHTML = text;
+    return nodeElement;
+  }
+  _fieldContainerTag(field) {
+    var nodeElement = document.createElement("SPAN");
+    nodeElement.classList = `erb-type-${field.type} erb-field-${field.name}`;
+    return nodeElement;
   }
 
   _appendHtmlToElement(html, toElement) {
