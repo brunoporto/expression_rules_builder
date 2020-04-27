@@ -1,5 +1,3 @@
-const path = require("path");
-
 module.exports = {
   entry: {
     index: "./src/index.js",
@@ -8,7 +6,7 @@ module.exports = {
   devtool: "source-map",
   output: {
     filename: "[name].min.js",
-    path: path.resolve(__dirname, "dist"),
+    path: __dirname,
   },
   module: {
     rules: [

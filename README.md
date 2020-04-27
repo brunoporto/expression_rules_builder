@@ -1,76 +1,117 @@
-# expression_rules_builder
+# Expression Rules Builder
 
-## Options
+## Install
+
+```bash
+yarn add expression_rules_builder
+```
+
+## Usage
 
 ```html
 <div id="expressions-container"></div>
 <div id="rules-container"></div>
+<button id="btnGetMyRules">Get Rules</button>
+<textarea id="myRules"></textarea>
 ```
 
 ```js
-var erb = ExpressionRulesBuilder({
+import ExpressionRulesBuilder from "expression-rules-builder";
+
+var erb = new ExpressionRulesBuilder({
   expressionsContainer: "#expressions-container",
   rulesContainer: "#rules-container",
   fields: [
     {
-      name: "fieldName",
-      placeholder: "fieldName",
-      customClass: "my-select-class",
+      name: "users",
+      placeholder: "Select a user",
       type: "list",
+      customClass: "my-select-class",
       values: [
-        ["Label", "value"],
-        ["Label", "value"],
-        ["Label", "value"],
+        ["Bruno", "BRUNO"],
+        ["José", "JOSE"],
       ],
     },
     {
-      name: "fieldName2",
-      placeholder: "fieldName2",
+      name: "roles",
+      placeholder: "Select a role",
+      customClass: "my-select-class",
+      type: "list",
+      values: [
+        ["Admin", "ADMIN"],
+        ["Client", "CLIENT"],
+      ],
+    },
+    {
+      name: "groups",
+      placeholder: "Select a group",
+      customClass: "my-select-class",
+      type: "list",
+      values: [
+        ["Diamond", "DIAMOND"],
+        ["Gold", "GOLD"],
+        ["Silver", "SILVER"],
+      ],
+    },
+    {
+      name: "price",
+      placeholder: "0,00",
+      customClass: "my-input-class",
+      type: "text",
+    },
+    {
+      name: "percent",
+      placeholder: "0",
       customClass: "my-input-class",
       type: "text",
     },
   ],
   expressions: [
+    { name: "user", text: "the user {users}" },
     {
-      name: "expression1",
-      text: "Lorem ipsum dolor sit {fieldName}, consectetur adipiscing elit.",
+      name: "user_role",
+      text: "the user {users} with role {roles}",
     },
-    {
-      name: "expression2",
-      text: "Donec {fieldName} ullamcorper. Duis consequat {fieldName2}",
-    },
+    { name: "group", text: "the user of group {groups}" },
+    { name: "price", text: "with price ${price}" },
+    { name: "percent", text: "with {percent}% percent" },
   ],
   rules: [
+    { expression: "user", fields: { users: "JOSE" } },
     {
-      expression: "expression2",
-      fields: { fieldName: "whatever", fieldName2: "something" },
+      expression: "user_role",
+      fields: { users: "BRUNO", roles: "ADMIN" },
     },
+    { expression: "price", fields: { price: "50" } },
   ],
 });
-
-var values = erb.getRules();
-// values => [{ expression: "expression2", values: { fieldName: "whatever", fieldName2: "something" } }]
 
 erb.beforeAddExpression(function (expressionName) {
   if (confirm("Are you sure?") == false) {
-    console.log(`Stopped by user!`);
-    return false; // return false to stop action
+    console.log(`stopped by user!`);
+    return false;
   }
 });
-
 erb.afterAddExpression(function (expressionName) {
   console.log(`Expression ${expressionName} added`);
 });
-
 erb.beforeRemoveRule(function (expressionName) {
   if (confirm("Are you sure?") == false) {
-    console.log(`Stopped by user!`);
-    return false; // return false to stop action
+    console.log(`stopped by user!`);
+    return false;
   }
 });
-
 erb.afterRemoveRule(function (expressionName) {
   console.log(`Rule ${expressionName} removed`);
+});
+
+document.getElementById("btnGetMyRules").addEventListener("click", (ev) => {
+  var values = erb.getRules();
+  document.getElementById("myRules").value = JSON.stringify(
+    values,
+    undefined,
+    4
+  );
 });
 ```
 
@@ -112,11 +153,11 @@ css: .my-custom-class { ... }
 }
 ```
 
-## Behavior
+## Demo
 
-...
+[https://brunoporto.github.io/expression_rules_builder/](https://brunoporto.github.io/expression_rules_builder/)
 
-## Commands
+## Development
 
 To generate dist package:
 
