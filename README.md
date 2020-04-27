@@ -2,6 +2,14 @@
 
 ## Install
 
+With npm
+
+```bash
+npm i expression-rules-builder
+```
+
+With yarn
+
 ```bash
 yarn add expression-rules-builder
 ```
