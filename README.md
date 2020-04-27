@@ -1,5 +1,7 @@
 # Expression Rules Builder
 
+Expression Rules Builder
+
 ## Install
 
 With npm
@@ -173,7 +175,7 @@ To generate dist package:
 yarn run build
 ```
 
-Run index.html to development [http://localhost:9000](http://localhost:9000):
+run index.html to development [http://localhost:9000](http://localhost:9000):
 
 ```bash
 yarn run dev
