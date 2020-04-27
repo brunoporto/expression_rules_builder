@@ -3,7 +3,7 @@
 ## Install
 
 ```bash
-yarn add expression_rules_builder
+yarn add expression-rules-builder
 ```
 
 ## Usage
@@ -16,7 +16,7 @@ yarn add expression_rules_builder
 ```
 
 ```js
-import ExpressionRulesBuilder from "expression_rules_builder";
+import ExpressionRulesBuilder from "expression-rules-builder";
 
 var erb = new ExpressionRulesBuilder({
   expressionsContainer: "#expressions-container",
