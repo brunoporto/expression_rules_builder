@@ -1,6 +1,6 @@
 "use strict";
 
-class ExpressionRulesBuilder {
+export default class ExpressionRulesBuilder {
   constructor({
     expressionsContainer = "",
     rulesContainer = "",
@@ -242,4 +242,4 @@ class ExpressionRulesBuilder {
   }
 }
 
-export default ExpressionRulesBuilder;
+export var __useDefault = true;
