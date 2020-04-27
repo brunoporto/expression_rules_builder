@@ -1,6 +1,6 @@
 "use strict";
 
-class ExpressionExpressionsBuilder {
+class ExpressionRulesBuilder {
   constructor({
     expressionsContainer = "",
     rulesContainer = "",
@@ -188,6 +188,9 @@ class ExpressionExpressionsBuilder {
   _fieldList(field, expressionName, initValue = "") {
     var selectTag = this._selectTag(field, expressionName);
     var emptyOptionTag = this._optionTag();
+    if (field.placeholder) {
+      emptyOptionTag.innerHTML = field.placeholder;
+    }
     selectTag.appendChild(emptyOptionTag);
     field.values.map((i) => {
       var value = i[1];
@@ -214,7 +217,6 @@ class ExpressionExpressionsBuilder {
   _selectTag(field, expressionName) {
     var nodeElement = document.createElement("SELECT");
     if (field.customClass) nodeElement.classList = field.customClass;
-    if (field.placeholder) nodeElement.placeholder = field.placeholder;
     nodeElement.name = `${expressionName}[${field.name}]`;
     nodeElement.dataset.field = field.name;
     return nodeElement;
@@ -240,6 +242,4 @@ class ExpressionExpressionsBuilder {
   }
 }
 
-module.exports = (opts) => {
-  return new ExpressionExpressionsBuilder(opts);
-};
+export default ExpressionRulesBuilder;

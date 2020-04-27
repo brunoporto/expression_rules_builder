@@ -15,16 +15,17 @@
   "devDependencies": {
     "@babel/cli": "^7.8.4",
     "@babel/core": "^7.9.0",
+    "@babel/plugin-syntax-dynamic-import": "^7.8.3",
     "@babel/preset-env": "^7.9.5",
     "babel-loader": "^8.1.0",
-    "dotenv": "^8.2.0",
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.11",
-    "webpack-dev-server": "^3.10.3"
+    "webpack-dev-server": "^3.10.3",
+    "webpack-merge": "^4.2.2"
   },
   "scripts": {
-    "build": "NODE_ENV=development webpack && webpack",
-    "dev": "webpack-dev-server --color --client-log-level --hot-only"
+    "build": "webpack --config webpack.prod.js",
+    "dev": "webpack-dev-server --config webpack.dev.js"
   },
   "repository": {
     "type": "git",

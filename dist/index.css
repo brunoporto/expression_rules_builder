@@ -1,0 +1,9 @@
+.erb-expression-item.selected {
+  display: none;
+}
+
+textarea {
+  display: block;
+  width: 500px;
+  height: 300px;
+}
